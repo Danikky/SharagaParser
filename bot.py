@@ -3,7 +3,7 @@ from aiogram.filters import Command
 import asyncio
 from parser import parsing, url
 
-API_TOKEN = "7911812987:AAHpm_K4N2DKRBKkDaNOCMkXCcY1MIINwgc"
+API_TOKEN = "СЕКРЕТ ЛОЛ"
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
