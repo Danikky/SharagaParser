@@ -5,10 +5,17 @@ import timeit # Чекаем скорость работы
 import json # Обработка формата данных
 import os # Хранение данных
 
-
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTOrEM-h36wb2LmpE3nF6f5tQMKVrBxWSZceBa7Jl5BZd5VaAt3GsHBLefgq9VV8RMDDb0FQEWNQol-/pub?output=xlsx"
 
-def parsing(url=None, sheet=None):
+def save_sheet(data: dict, filename: str):
+    with open(f"{filename}.json", 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+def read_sheet(filename: str):
+    with open(f"{filename}.json", 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+def parsing(url=None, sheet=None, is_save=False):
     # Скачивание тиаблицы по url
     if url:
         urllib.request.urlretrieve(url, "tables.xlsx")
@@ -72,9 +79,13 @@ def parsing(url=None, sheet=None):
                 "para": sheet.cell(row=row + i*3, column=group["id"]).value,
                 "teacher": sheet.cell(row=row + 1 + i*3, column=group["id"]).value
                 }
-            
+    
+    # Сохранение данных        
+    if is_save:
+        save_sheet(data=groups, filename=sheet.title)
+    
     # Возвращает списко групп студентов
-    return groups
+    return groups    
 
 def test_url():
     for i in parsing(url=url):
@@ -102,8 +113,16 @@ def test_sheets():
         |4| {i[4]}
         |5| {i[5]}
         """)
-    
+
+def test_save():
+    wb = xl.load_workbook("tables.xlsx", read_only=True)
+    sheets = wb.sheetnames
+    for sheet in sheets:
+        for i in parsing(sheet=wb[sheet], is_save=True):
+            print(f"// ТАБЛИЦА {sheet} СОХРАНЕНА //")
+
 
 if __name__ == "__main__":
     # test_url()
-    test_sheets()
+    # test_sheets()
+    test_save()
