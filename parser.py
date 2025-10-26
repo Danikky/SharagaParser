@@ -15,7 +15,16 @@ def read_sheet(filename: str):
     with open(f"jsons/{filename}.json", 'r', encoding='utf-8') as f:
         return json.load(f)
 
-def parsing(url=None, sheet=None, is_save=False):
+# ДАЖЕ КОММЕНТЫ ДОБАВИЛ, АРТЕМ НЕ ТУПИ
+def parsing(url=None, sheet=None, is_save=False): 
+    """Функция для извлечения данных из таблицы с расписанием уолледжа подмосковье\n
+    Keyword arguments:\n
+    ulr: Имеет приоритет над sheet, скачивает таблицу и берёт активный sheet.\n
+    sheet: Обрабатывает конкретный sheet. Заранее инициализировать в переменную и передать в функцию.\n
+    is_save: Если 'True', сохранияет обработанную таблицу в формате '.json' в папку 'jsons'.\n
+    Return: Список групп.
+    """
+    
     # Скачивание тиаблицы по url
     if url:
         urllib.request.urlretrieve(url, "tables.xlsx")
@@ -29,9 +38,13 @@ def parsing(url=None, sheet=None, is_save=False):
     # Инициализация групп
     row_id = 0 # номер строки
     for row in sheet.iter_rows():
+        
         row_id += 1 
         col_id = 0 # номер колонки
+        
         for i in row:
+            
+            # Обнаружение группы
             col_id += 1
             if row_id == 3 or row_id == 24 or row_id == 45 or row_id == 66: # Строки с названиями групп
                 if col_id > 2: # Скипаем "ВРЕМЯ" и "ПАРА"
@@ -118,9 +131,11 @@ def test_save():
     wb = xl.load_workbook("tables.xlsx", read_only=True)
     sheets = wb.sheetnames
     for sheet in sheets:
-        for i in parsing(sheet=wb[sheet], is_save=True):
-            print(f"// ТАБЛИЦА {sheet} СОХРАНЕНА //")
-
+        print(f"// ТАБЛИЦА {sheet} ОБРАБАТЫВАЕТСЯ //")
+        parsing(sheet=wb[sheet], is_save=True)
+        print(f"// ТАБЛИЦА {sheet} СОХРАНЕНА //")
+        print()
+        
 if __name__ == "__main__":
     # test_url()
     # test_sheets()
