@@ -2,8 +2,9 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 import asyncio
 from parser import parsing, url
+from params import BOT_API # робит только у меня
 
-API_TOKEN = "СЕКРЕТ ЛОЛ"
+API_TOKEN = BOT_API # заменить 
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
