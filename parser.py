@@ -8,11 +8,11 @@ import os # Хранение данных
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTOrEM-h36wb2LmpE3nF6f5tQMKVrBxWSZceBa7Jl5BZd5VaAt3GsHBLefgq9VV8RMDDb0FQEWNQol-/pub?output=xlsx"
 
 def save_sheet(data: dict, filename: str):
-    with open(f"{filename}.json", 'w', encoding='utf-8') as f:
+    with open(f"jsons/{filename}.json", 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 def read_sheet(filename: str):
-    with open(f"{filename}.json", 'r', encoding='utf-8') as f:
+    with open(f"jsons/{filename}.json", 'r', encoding='utf-8') as f:
         return json.load(f)
 
 def parsing(url=None, sheet=None, is_save=False):
@@ -120,7 +120,6 @@ def test_save():
     for sheet in sheets:
         for i in parsing(sheet=wb[sheet], is_save=True):
             print(f"// ТАБЛИЦА {sheet} СОХРАНЕНА //")
-
 
 if __name__ == "__main__":
     # test_url()
