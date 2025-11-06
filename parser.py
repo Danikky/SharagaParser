@@ -14,7 +14,14 @@ def save_sheet(data: dict, filename: str):
 def read_sheet(filename: str):
     with open(f"jsons/{filename}.json", 'r', encoding='utf-8') as f:
         return json.load(f)
-
+    
+def update_tables(url=url):
+    if url:
+        try:        
+            urllib.request.urlretrieve(url, "tables.xlsx")
+        except:
+            print("Ошибка скачивания таблицы")
+    
 # ДАЖЕ КОММЕНТЫ ДОБАВИЛ, АРТЕМ НЕ ТУПИ
 def parsing(url=None, sheet=None, is_save=False): 
     """Функция для извлечения данных из таблицы с расписанием уолледжа подмосковье\n
@@ -27,12 +34,16 @@ def parsing(url=None, sheet=None, is_save=False):
     
     # Скачивание тиаблицы по url
     if url:
-        urllib.request.urlretrieve(url, "tables.xlsx")
-    
-        # Инициализация xlsx таблицы
-        wb = xl.load_workbook("tables.xlsx", read_only=True)
-        sheet = wb.active
-    
+        try:
+            urllib.request.urlretrieve(url, "tables.xlsx")
+
+            # Инициализация xlsx таблицы
+            wb = xl.load_workbook("tables.xlsx", read_only=True)
+            sheet = wb.active
+        except:
+            print("Ошибка скачавания таблицы")
+        print("Данные обновлены")
+        
     groups = [] # Массим с группами
     
     # Инициализация групп
@@ -103,13 +114,13 @@ def parsing(url=None, sheet=None, is_save=False):
 def test_url():
     for i in parsing(url=url):
         print(f"""
-    | Группа: {i["name"]} | Курс: {i["curse"]} |
-    |1| {i[1]}
-    |2| {i[2]}
-    |3| {i[3]}
-    |4| {i[4]}
-    |5| {i[5]}
-    """)
+| Группа: {i["name"]} | Курс: {i["curse"]} |
+|1| {i[1]}
+|2| {i[2]}
+|3| {i[3]}
+|4| {i[4]}
+|5| {i[5]}
+""")
     print("Время обработки таблицы: ", timeit.timeit(lambda: parsing(url), number=1))
 
 def test_sheets():
@@ -140,4 +151,5 @@ if __name__ == "__main__":
     # test_url()
     # test_sheets()
     # test_save()
+    # update_tables()
     pass
