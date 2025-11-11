@@ -48,27 +48,31 @@ def parsing(url=None, sheet=None, is_save=False):
     
     # Инициализация групп
     row_id = 0 # номер строки
+    
+    move = 0
+    if str(sheet["F1"]).lower == "понедельник":
+        move = 5
     for row in sheet.iter_rows():
         
         row_id += 1 
         col_id = 0 # номер колонки
         
         for i in row:
-            
+
             # Обнаружение группы
             col_id += 1
-            if row_id == 3 or row_id == 24 or row_id == 45 or row_id == 66: # Строки с названиями групп
+            if row_id == 3 + move*0 or row_id == 24 + move*1 or row_id == 45 + move*2 or row_id == 66 + move*3: # Строки с названиями групп
                 if col_id > 2: # Скипаем "ВРЕМЯ" и "ПАРА"
                     if i.value: # Проверяем Null значение
                         
                         # Присваиваем курс
-                        if row_id == 3:
+                        if row_id == 3 + move*0:
                             curse = 1
-                        if row_id == 24:
+                        if row_id == 24 + move*1:
                             curse = 2
-                        if row_id == 45:
+                        if row_id == 45 + move*2:
                             curse = 3
-                        if row_id == 66:
+                        if row_id == 66 + move*3:
                             curse = 4
                         
                         # Записываем данные в массив
@@ -76,17 +80,16 @@ def parsing(url=None, sheet=None, is_save=False):
                             "id": col_id,
                             "name": i.value,
                             "curse": curse,
-                            1: None,
-                            2: None,
-                            3: None,
-                            4: None,
-                            5: None,
-                            6: None
+                            '1': None,
+                            '2': None,
+                            '3': None,
+                            '4': None,
+                            '5': None,
+                            '6': None
                         })
     
     # Распределение пар и преподов по группам
     for group in groups:
-        
         # Вычисление нужно строки 
         if group["curse"] == 1:
             row = 3
@@ -99,12 +102,12 @@ def parsing(url=None, sheet=None, is_save=False):
             
         # Присваивание значений
         for i in range(5):
-            group[i] = {
-                "para": sheet.cell(row=row + i*3, column=group["id"]).value,
-                "teacher": sheet.cell(row=row + 1 + i*3, column=group["id"]).value
+            group[str(i+1)] = {
+                "para": sheet.cell(row=row + i*3 + 3, column=group["id"]).value,
+                "teacher": sheet.cell(row=row + i*3 + 3, column=group["id"]).value
                 }
     
-    # Сохранение данных        
+    # Сохранение данных
     if is_save:
         save_sheet(data=groups, filename=sheet.title)
     
@@ -115,11 +118,12 @@ def test_url():
     for i in parsing(url=url):
         print(f"""
 | Группа: {i["name"]} | Курс: {i["curse"]} |
-|1| {i[1]}
-|2| {i[2]}
-|3| {i[3]}
-|4| {i[4]}
-|5| {i[5]}
+|1| {i['1']}
+|2| {i['2']}
+|3| {i['3']}
+|4| {i['4']}
+|5| {i['5']}
+|6| {i['6']}
 """)
     print("Время обработки таблицы: ", timeit.timeit(lambda: parsing(url), number=1))
 
@@ -130,12 +134,13 @@ def test_sheets():
         print(f"// ТАБЛИЦА {sheet} //")
         for i in parsing(sheet=wb[sheet]):
             print(f"""
-        | Группа: {i["name"]} | Курс: {i["curse"]} |
-        |1| {i[1]}
-        |2| {i[2]}
-        |3| {i[3]}
-        |4| {i[4]}
-        |5| {i[5]}
+| Группа: {i["name"]} | Курс: {i["curse"]} |
+|1| {i['1']}
+|2| {i['2']}
+|3| {i['3']}
+|4| {i['4']}
+|5| {i['5']}
+|6| {i['6']}
         """)
 
 def test_save():
@@ -150,6 +155,6 @@ def test_save():
 if __name__ == "__main__":
     # test_url()
     # test_sheets()
-    # test_save()
+    test_save()
     # update_tables()
     pass
