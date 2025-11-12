@@ -32,53 +32,43 @@ def parsing(url=None, sheet=None, is_save=False):
     Return: Список групп.
     """
     
-    # Скачивание тиаблицы по url
     if url:
         try:
             urllib.request.urlretrieve(url, "tables.xlsx")
-
-            # Инициализация xlsx таблицы
             wb = xl.load_workbook("tables.xlsx", read_only=True)
             sheet = wb.active
         except:
             print("Ошибка скачавания таблицы")
         print("Данные обновлены")
         
-    groups = [] # Массим с группами
-    
-    # Инициализация групп
-    row_id = 0 # номер строки
-    
-    move = 0
-    if str(sheet["F1"]).lower == "понедельник":
-        move = 5
+    groups = []
+    row_id = 0
+    move = [0, 0, 0, 0]
+    if sheet["A21"].value:
+        move = [0, 3, 6, 9]
     for row in sheet.iter_rows():
         
-        row_id += 1 
-        col_id = 0 # номер колонки
+        row_id += 1
+        col_id = 0
         
-        for i in row:
-
-            # Обнаружение группы
+        for col in row:
             col_id += 1
-            if row_id == 3 + move*0 or row_id == 24 + move*1 or row_id == 45 + move*2 or row_id == 66 + move*3: # Строки с названиями групп
-                if col_id > 2: # Скипаем "ВРЕМЯ" и "ПАРА"
-                    if i.value: # Проверяем Null значение
+            if row_id == 3 or row_id == 24 + move[1] or row_id == 45 + move[2] or row_id == 66 + move[3]: # Строки с названиями групп
+                if col_id > 2:
+                    if col.value:
                         
-                        # Присваиваем курс
-                        if row_id == 3 + move*0:
+                        if row_id == 3:
                             curse = 1
-                        if row_id == 24 + move*1:
+                        if row_id == 24 + move[1]:
                             curse = 2
-                        if row_id == 45 + move*2:
+                        if row_id == 45 + move[2]:
                             curse = 3
-                        if row_id == 66 + move*3:
+                        if row_id == 66 + move[3]:
                             curse = 4
                         
-                        # Записываем данные в массив
                         groups.append({
                             "id": col_id,
-                            "name": i.value,
+                            "name": str(col.value),
                             "curse": curse,
                             '1': None,
                             '2': None,
@@ -87,10 +77,10 @@ def parsing(url=None, sheet=None, is_save=False):
                             '5': None,
                             '6': None
                         })
-    
-    # Распределение пар и преподов по группам
+    iterations = 5
+    if move[1] != 0:
+        iterations = 6
     for group in groups:
-        # Вычисление нужно строки 
         if group["curse"] == 1:
             row = 3
         if group["curse"] == 2:
@@ -99,12 +89,10 @@ def parsing(url=None, sheet=None, is_save=False):
             row = 45
         if group["curse"] == 4:
             row = 66
-            
-        # Присваивание значений
-        for i in range(5):
+        for i in range(iterations):
             group[str(i+1)] = {
-                "para": sheet.cell(row=row + i*3 + 3, column=group["id"]).value,
-                "teacher": sheet.cell(row=row + i*3 + 3, column=group["id"]).value
+                "para": sheet.cell(row=row + i*3 + 3 + move[group["curse"]-1], column=group["id"]).value,
+                "teacher": sheet.cell(row=row + i*3 + 4 + move[group["curse"]-1], column=group["id"]).value
                 }
     
     # Сохранение данных
